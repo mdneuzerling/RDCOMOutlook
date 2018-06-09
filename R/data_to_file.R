@@ -26,7 +26,7 @@ data_to_file <- function(data, file_format = "csv", ...) {
     }
     
     # Based on the cleansed `file_format`, determine how to save the data to a file
-    file_path <- paste0(tempdir(), "/", deparse(substitute(data)), ".", file_format)
+    file_path <- paste0(tempdir(), "\\", deparse(substitute(data)), ".", file_format)
     if (file_format == "csv") {
         write_csv(...)
     } else if (file_format == "txt") {

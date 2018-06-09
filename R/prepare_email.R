@@ -51,6 +51,26 @@ prepare_email <- function(
 ) {
     outlook_app <- RDCOMClient::COMCreate("Outlook.Application")
     
+    make_list <- function(x) {
+        if (is.null(x)) {
+            x
+        } else if (is.ggplot(x)) { # ggplots are lists
+            list(x)
+        } else if (is.data.frame(x)) {
+            list(x)  
+        } else if (is.list(x)) {
+            x
+        } else if (is.vector(x)) {
+            as.list(x)
+        } else {
+            list(x) # single item case
+        }
+    }
+    
+    # Convert embeddings and attachments to lists
+    embeddings <- make_list(embeddings)
+    attachments <- make_list(attachments)
+    
 # When we create an email, it contains only the user's signature.
     outlook_mail <- outlook_app$CreateItem(0) # Check if the 0 is necessary
     outlook_mail$GetInspector()
@@ -63,31 +83,31 @@ prepare_email <- function(
     
 # Attach files (if any)
 # Check that this doesn't mangle the attachment file names
-    purrr::walk(attachments, ~function(x) {
+    purrr::walk(attachments, function(x) {
         file_path <- to_file(x)
         outlook_mail[["Attachments"]]$Add(file_path)
-        unlink(file_path)
     })
     
 # Embed files in the body of the email, if requested
-    purrr::walk(embeddings, ~function(x) {
-        file_path <- to_file(x)
+    purrr::walk(embeddings, function(x) {
         if (is.data.frame(x)) {
-            body <- data_to_html(x) # don't need the file path in this case
-        } else if (is.ggplot(x)) {
-            Email[["Attachments"]]$Add(file_path)    
-            body <- paste0(
+            body <<- paste0(body, data_to_html(x)) # don't need the file path in this case
+        } else if (ggplot2::is.ggplot(x)) {
+            file_path <- to_file(x) 
+            outlook_mail[["Attachments"]]$Add(file_path)    
+            body <<- paste0(
                 body, 
                 "<img src='cid:",
                 basename(file_path),
-                "'",
-                #"width = '400' height = '400'", # Unsure if size needs to be specified
+                "' ",
+                "width = '400' height = '400'",
                 ">"
             ) 
+            unlink(file_path)
         } else {
+            file_path <- to_file(x) # validates file
             outlook_mail[["Attachments"]]$Add(file_path)
-        }
-        unlink(file_path)
+        } 
     })
     
 # Put the pieces of the email body together, including css and signature.

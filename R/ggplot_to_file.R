@@ -13,7 +13,7 @@
 ggplot_to_file <- function(gg, device = "png", ...) {
     # Convert device to lower-case and remove leading periods
     file_format <- tolower(gsub("^\\.*", "", device))
-    file_path <- paste0(tempdir(), "/", deparse(substitute(gg)), ".", device)
+    file_path <- paste0(tempdir(), "\\", deparse(substitute(gg)), ".", device)
     ggplot2::ggsave(file_path, plot = gg, device = device, ...)
     return(file_path)
 }  
