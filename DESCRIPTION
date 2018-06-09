@@ -1,0 +1,10 @@
+Package: RDCOMOutlook
+Title: Programmatic access to Microsoft Outlook on Windows through RDCOMClient 
+Version: 0.0.0.9000
+Authors@R: person("Murray David", "Neuzerling", email = "first.last@example.com", role = c("aut", "cre"))
+Description: Provides a wrapper to access a locally installed Microsoft Outlook application on Windows through RDCOMClient, an R package that allows R to act as a DCOM client. Access is provided through two key functions: prepare_email, which allows an email to be prepared in R with R objects (data frames, tibbles, ggplots), and find_emails, which allows the user to search their emails and extract attachments.
+Depends: R (>= 3.4.4), RDCOMClient, purrr, xtable, readr, ggplot2
+License: GNU General Public License v3.0
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
