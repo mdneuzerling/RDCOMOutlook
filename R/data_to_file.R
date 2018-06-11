@@ -13,7 +13,7 @@
 #' @keywords
 
 data_to_file <- function(data, file_format = "csv", ...) {
-    # Convert file_format to lower-case and remove leading periods
+    # Convert file_format to lower-case and remove leading dots, if any
     file_format <- tolower(gsub("^\\.*", "", file_format))
     
     # Cleanse the `file_format` to match the file extension
@@ -26,11 +26,11 @@ data_to_file <- function(data, file_format = "csv", ...) {
     }
     
     # Based on the cleansed `file_format`, determine how to save the data to a file
-    file_path <- paste0(tempdir(), "\\", deparse(substitute(data)), ".", file_format)
+    file_path <- paste0(tempdir(), "/", deparse(substitute(data)), ".", file_format)
     if (file_format == "csv") {
-        write_csv(...)
+        readr::write_csv(data, path = file_path, ...)
     } else if (file_format == "txt") {
-        write_tsv(...)
+        readr::write_tsv(data, path = file_path, ...)
     } else if (file_format == "xlsx") {
         stop("No method implemented for writing data to excel files")
     } else {
@@ -38,4 +38,4 @@ data_to_file <- function(data, file_format = "csv", ...) {
     }
     
     return(file_path)
-}
+} 

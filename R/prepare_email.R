@@ -11,6 +11,7 @@
 #' No argument is mandatory; running prepare_email() will cause a blank 
 #' composing window to appear. CSS can be entered with the css argument, but
 #' note that most CSS is disabled by Microsoft Outlook.
+#' 
 #' @param embeddings An optional list of all objects to be embedded into the 
 #' email body or, in the case of a file path, the file will be attached instead, 
 #' to allow files to be piped into the function. ggplots will be converted to 
@@ -97,11 +98,7 @@ prepare_email <- function(
             outlook_mail[["Attachments"]]$Add(file_path)    
             body <<- paste0(
                 body, 
-                "<img src='cid:",
-                basename(file_path),
-                "' ",
-                "width = '400' height = '400'",
-                ">"
+                embed_image_cid(file_path)
             ) 
             unlink(file_path)
         } else {

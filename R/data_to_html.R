@@ -7,6 +7,7 @@
 #' HTML output. 
 #' Defaults to FALSE.
 #' @keywords
+#' @export
 
 data_to_html <- function(data, border = FALSE) {
     print(
