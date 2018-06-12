@@ -90,7 +90,8 @@ prepare_email <- function(
         file_path <- to_file(
             x,
             data_file_format = data_file_format,
-            image_file_format = image_file_format
+            image_file_format = image_file_format,
+            file_name = deparse(substitute(x))
         )
         outlook_mail[["Attachments"]]$Add(file_path)
     })
@@ -103,7 +104,8 @@ prepare_email <- function(
             file_path <- to_file(
                 x,
                 data_file_format = data_file_format,
-                image_file_format = image_file_format
+                image_file_format = image_file_format,
+                file_name = deparse(substitute(x))
             ) 
             outlook_mail[["Attachments"]]$Add(file_path)    
             body <<- paste0(
@@ -115,7 +117,8 @@ prepare_email <- function(
             file_path <- to_file(
                 x,
                 data_file_format = data_file_format,
-                image_file_format = image_file_format
+                image_file_format = image_file_format,
+                file_name = deparse(substitute(x))
             ) # validates file
             outlook_mail[["Attachments"]]$Add(file_path)
         } 

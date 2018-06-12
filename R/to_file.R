@@ -5,10 +5,28 @@
 #' object, and will be given an extension that corresponds to the method by
 #' which the file was saved. If a file path corresponding to an existing file 
 #' is given, then that file path is returned.
-#' @param 
+#' @param obj Either a ggplot, data frame, tibble, or valid file path.
+#' @param data_file_format Preferred format for data frames/tibbles when 
+#' saved to a file.
+#' @param image_file_format Preferred format for ggplots and images when 
+#' saved to a file.
+#' @param file_name Sets the name of the saved file, without the extension. If
+#' this isn't provided, the name of the `data` variable will be used. "."
 #' @keywords
 
-to_file <- function(obj, data_file_format = "csv", image_file_format = "png") {
+to_file <- function(
+    obj, 
+    data_file_format = "csv", 
+    image_file_format = "png",
+    file_name = NULL
+) {
+    
+    file_name <- if (!is.null(file_name)) {
+        file_name
+    } else { 
+        deparse(substitute(obj)) # Name the file after the variable
+    } 
+    
     if (ggplot2::is.ggplot(obj)) {
         file_path <- ggplot_to_file(
             obj, 
