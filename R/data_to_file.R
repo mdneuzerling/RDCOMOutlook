@@ -8,25 +8,27 @@
 #' output is planned.
 #' @param data A data frame or tibble to be converted into a file.
 #' @param file_format A file_format which will determine how the data is saved
-#' and the extension of the resulting file.
-#' Defaults to "csv" (comma-separated file)
+#' and the extension of the resulting file. Currently supports "csv" (comma-
+#' separated) or tsv (tab-separated).
+#' Defaults to "csv" (comma-separated)
+#' @param file_name Sets the name of the saved file, without the extension. If
+#' this isn't provided, the name of the `data` variable will be used, unless 
+#' that variable name is "." (usually provided by a pipe %>%); in this case,
+#' the file name will be "data_", followed by a string of random numbers.
 #' @keywords
 
-data_to_file <- function(data, file_format = "csv", ...) {
-    # Convert file_format to lower-case and remove leading dots, if any
-    file_format <- tolower(gsub("^\\.*", "", file_format))
+data_to_file <- function(data, file_format = "csv", file_name = NULL, ...) {
     
-    # Cleanse the `file_format` to match the file extension
-    file_format <- if (file_format == "tsv") { # tab-separated 
-        "txt"
-    } else if (file_format %in% c("excel", "xlsx", "xlsm", "xls")) {
-        "xlsx"
+    file_name <- if (!is.null(file_name)) {
+        file_name
+    } else if (deparse(substitute(data)) != ".") { 
+        deparse(substitute(data)) # Name the file after the variable
     } else {
-        file_format
+        paste0("data_", sample(1:999999, 1)) # random file name
     }
     
-    # Based on the cleansed `file_format`, determine how to save the data to a file
-    file_path <- paste0(tempdir(), "/", deparse(substitute(data)), ".", file_format)
+# Based on the cleansed `file_format`, determine how to save the data to a file
+    file_path <- paste0(tempdir(), "/", file_name, ".", file_format)
     if (file_format == "csv") {
         readr::write_csv(data, path = file_path, ...)
     } else if (file_format == "txt") {

@@ -10,9 +10,9 @@
 
 to_file <- function(obj, ...) {
     if (ggplot2::is.ggplot(obj)) {
-        file_path <- ggplot_to_file(obj, ...)
+        file_path <- ggplot_to_file(obj, file_name = deparse(substitute(obj)), ...)
     } else if (is.data.frame(obj)) {
-        file_path <- data_to_file(obj, ...)
+        file_path <- data_to_file(obj, file_name = deparse(substitute(obj)), ...)
     } else if (file.exists(obj)) {
         file_path <- obj
     } else {
