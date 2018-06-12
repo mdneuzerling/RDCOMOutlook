@@ -5,7 +5,8 @@
 \title{Prepare an outgoing Outlook email}
 \usage{
 prepare_email(embeddings = NULL, body = "", to = "", cc = "",
-  subject = "", attachments = NULL, css = "", send = FALSE)
+  subject = "", attachments = NULL, css = "", send = FALSE,
+  data_file_format = "csv", image_file_format = "png")
 }
 \arguments{
 \item{embeddings}{An optional list of all objects to be embedded into the 
@@ -27,7 +28,10 @@ Defaults to an empty string.}
 \item{attachments}{A ggplot, data frame, tibble, or file path which will be
 attached to the email (converting to a file if necessary), or a vector 
 containing any combination of these things. ggplots will be converted to 
-images and data frames/tibbles will be converted to delimited files.}
+images and data frames/tibbles will be converted to delimited files. 
+If providing a list of ggplot or data frames/tibbles, it it best to provide
+a named list. Otherwise, the attachments will be named attachment_1, 
+attachment_2, etc.}
 
 \item{css}{An optional string of CSS that will modify the HTML body of the 
 email. Note that only some CSS affects Outlook emails.}
