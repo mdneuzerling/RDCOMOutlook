@@ -10,6 +10,16 @@
 #' @export
 
 data_to_html <- function(data, border = FALSE) {
+
+    if (ncol(dplyr::select_if(data, is.list))) {
+        warning(paste0(
+            "Unable to convert columns of type 'list' into HTML. ",
+            "These columns will be ignored."
+        ))
+    }
+    
+    data <- dplyr::select_if(data, negate(is.list))
+    
     print(
         xtable(data),
         type ='html',
