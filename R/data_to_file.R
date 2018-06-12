@@ -9,8 +9,8 @@
 #' @param data A data frame or tibble to be converted into a file.
 #' @param file_format A file_format which will determine how the data is saved
 #' and the extension of the resulting file. Currently supports "csv" (comma-
-#' separated) or tsv (tab-separated).
-#' Defaults to "csv" (comma-separated)
+#' separated), "tsv" (tab-separated), or "xlsx"/"excel". 
+#' Defaults, "csv" (comma-separated)
 #' @param file_name Sets the name of the saved file, without the extension. If
 #' this isn't provided, the name of the `data` variable will be used. "." is a
 #' forbidden `file_name` for this function, and is usually provided by a pipe 
@@ -19,11 +19,14 @@
 #' @keywords
 
 data_to_file <- function(data, file_format = "csv", file_name = NULL, ...) {
+
+# Excel files are saved as .xlsx    
+    if (file_format == "excel") {file_format <- "xlsx"}
     
     file_name <- if (!is.null(file_name)) {
         file_name
     } else { 
-        deparse(substitute(gg)) # Name the file after the variable
+        deparse(substitute(data)) # Name the file after the variable
     } 
     
     if (file_name == ".") {
@@ -34,12 +37,13 @@ data_to_file <- function(data, file_format = "csv", file_name = NULL, ...) {
     file_path <- paste0(tempdir(), "/", file_name, ".", file_format)
     if (file_format == "csv") {
         readr::write_csv(data, path = file_path, ...)
-    } else if (file_format == "txt") {
+    } else if (file_format == "tsv") {
         readr::write_tsv(data, path = file_path, ...)
     } else if (file_format == "xlsx") {
-        stop("No method implemented for writing data to excel files")
+        writexl::write_xlsx(data, path = file_path, ...)
     } else {
-        stop(paste0("Don't know how to write to ", file_format))
+        stop(paste0("Don't know how to write to ", file_format, ". ",
+                    "Can only write to 'csv', 'tsv' or 'xlsx'/'excel'."))
     }
     
     return(file_path)

@@ -5,7 +5,7 @@
 #' given an extension that corresponds to the method by which the file was 
 #' saved. The `device` (eg. "png" or "jpeg") is passed to the `ggsave` function.
 #' @param gg A ggplot to be converted into a file.
-#' @param device An argument passed onto the ggsave function that determines
+#' @param file_format An argument passed onto the ggsave function that determines
 #' how the plot is saved. It is recommended to use either "png" or "jpeg".
 #' Defaults to "png".
 #' @param file_name Sets the name of the saved file, without the extension. If
@@ -15,7 +15,7 @@
 #' string of random numbers.
 #' @keywords
  
-ggplot_to_file <- function(gg, device = "png", file_name = NULL, ...) {
+ggplot_to_file <- function(gg, file_format = "png", file_name = NULL, ...) {
     
     file_name <- if (!is.null(file_name)) {
         file_name
@@ -28,6 +28,6 @@ ggplot_to_file <- function(gg, device = "png", file_name = NULL, ...) {
     }
     
     file_path <- paste0(tempdir(), "/", file_name, ".", device)
-    ggplot2::ggsave(file_path, plot = gg, device = device, ...)
+    ggplot2::ggsave(file_path, plot = gg, device = device = file_format, ...)
     return(file_path)
 }  
