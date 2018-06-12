@@ -21,22 +21,20 @@ to_file <- function(
     file_name = NULL
 ) {
     
-    file_name <- if (!is.null(file_name)) {
-        file_name
-    } else { 
-        deparse(substitute(obj)) # Name the file after the variable
+    if (is.null(file_name)) {
+        file_name <- deparse(substitute(obj))
     } 
     
     if (ggplot2::is.ggplot(obj)) {
         file_path <- ggplot_to_file(
             obj, 
-            file_name = deparse(substitute(obj)),
+            file_name = file_name,
             file_format = image_file_format
         )
     } else if (is.data.frame(obj)) {
         file_path <- data_to_file(
             obj, 
-            file_name = deparse(substitute(obj)),
+            file_name = file_name,
             file_format = data_file_format
         )
     } else if (file.exists(obj)) {

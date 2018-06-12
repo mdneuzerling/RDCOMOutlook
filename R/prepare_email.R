@@ -30,7 +30,10 @@
 #' @param attachments A ggplot, data frame, tibble, or file path which will be
 #' attached to the email (converting to a file if necessary), or a vector 
 #' containing any combination of these things. ggplots will be converted to 
-#' images and data frames/tibbles will be converted to delimited files.
+#' images and data frames/tibbles will be converted to delimited files. 
+#' If providing a list of ggplot or data frames/tibbles, it it best to provide
+#' a named list. Otherwise, the attachments will be named attachment_1, 
+#' attachment_2, etc.
 #' @param css An optional string of CSS that will modify the HTML body of the 
 #' email. Note that only some CSS affects Outlook emails. 
 #' @param send A Boolean value which, if set to TRUE, will send
@@ -52,8 +55,16 @@ prepare_email <- function(
     data_file_format = "csv",
     image_file_format = "png"
 ) {
-    outlook_app <- RDCOMClient::COMCreate("Outlook.Application")
     
+# Store names of provided attachments and embeddings
+# We will use this later in the case in which only one embedding or attachment
+# is provided.
+    embeddings_argument_name <- deparse(substitute(embeddings))
+    attachments_argument_name <- deparse(substitute(attachments))
+    
+    outlook_app <- RDCOMClient::COMCreate("Outlook.Application")
+
+# Convert embeddings and attachments to lists
     make_list <- function(x) {
         if (is.null(x)) {
             x
@@ -69,10 +80,24 @@ prepare_email <- function(
             list(x) # single item case
         }
     }
-    
-    # Convert embeddings and attachments to lists
     embeddings <- make_list(embeddings)
     attachments <- make_list(attachments)
+    
+# If only one attachment or embedding is provided, we can rename the list.
+    if (length(embeddings) == 1) {
+        names(embeddings) <- embeddings_argument_name
+    }
+    if (length(attachments) == 1) {
+        names(attachments) <- attachments_argument_name
+    }
+
+# If an unnamed list is provided, we give temporary names to avoid conflicts
+    if (!is.null(attachments) & is.null(names(attachments))) {
+        names(attachments) <- paste0("attachment_", seq_along(attachments))
+    }
+    if (!is.null(embeddings) & is.null(names(embeddings))) {
+        names(embeddings) <- paste0("embedding_", seq_along(embeddings))
+    }
     
 # When we create an email, it contains only the user's signature.
     outlook_mail <- outlook_app$CreateItem(0) # Check if the 0 is necessary
@@ -86,42 +111,41 @@ prepare_email <- function(
     
 # Attach files (if any)
 # Check that this doesn't mangle the attachment file names
-    purrr::walk(attachments, function(x) {
+    purrr::walk(seq_along(attachments), function(x) {
+        attachment <- attachments[[x]]
+        attachment_name <- names(attachments)[[x]]
         file_path <- to_file(
-            x,
+            attachment,
             data_file_format = data_file_format,
             image_file_format = image_file_format,
-            file_name = deparse(substitute(x))
+            file_name = attachment_name
         )
         outlook_mail[["Attachments"]]$Add(file_path)
     })
     
 # Embed files in the body of the email, if requested
-    purrr::walk(embeddings, function(x) {
-        if (is.data.frame(x)) {
-            body <<- paste0(body, data_to_html(x)) # don't need the file path in this case
-        } else if (ggplot2::is.ggplot(x)) {
+    purrr::walk(seq_along(embeddings), function(x) {
+        embedding <- embeddings[[x]]
+        embedding_name <- names(embeddings)[[x]]
+        if (is.data.frame(embedding)) {
+            body <<- paste0(body, data_to_html(embedding)) # don't need the file path in this case
+        } else if (ggplot2::is.ggplot(embedding)) {
             file_path <- to_file(
-                x,
+                embedding,
                 data_file_format = data_file_format,
                 image_file_format = image_file_format,
-                file_name = deparse(substitute(x))
-            ) 
-            outlook_mail[["Attachments"]]$Add(file_path)    
-            body <<- paste0(
-                body, 
-                embed_image_cid(file_path)
-            ) 
-            unlink(file_path)
-        } else {
-            file_path <- to_file(
-                x,
-                data_file_format = data_file_format,
-                image_file_format = image_file_format,
-                file_name = deparse(substitute(x))
-            ) # validates file
+                file_name = embedding_name
+            )
             outlook_mail[["Attachments"]]$Add(file_path)
-        } 
+            body <<- paste0(
+                body,
+                embed_image_cid(file_path)
+            )
+            unlink(file_path)
+        } else { # If a file can't be embedded, attach it
+            file_path <- to_file(embedding) # validates file
+            outlook_mail[["Attachments"]]$Add(file_path)
+        }
     })
     
 # Put the pieces of the email body together, including css and signature.

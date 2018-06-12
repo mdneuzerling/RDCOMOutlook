@@ -23,10 +23,8 @@ data_to_file <- function(data, file_format = "csv", file_name = NULL, ...) {
 # Excel files are saved as .xlsx    
     if (file_format == "excel") {file_format <- "xlsx"}
     
-    file_name <- if (!is.null(file_name)) {
-        file_name
-    } else { 
-        deparse(substitute(data)) # Name the file after the variable
+    if (is.null(file_name)) {
+        file_name <- deparse(substitute(data))
     } 
     
     if (file_name == ".") {

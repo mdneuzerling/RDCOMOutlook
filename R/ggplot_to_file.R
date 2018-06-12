@@ -20,14 +20,12 @@ ggplot_to_file <- function(gg, file_format = "png", file_name = NULL, ...) {
     # "jpg" is a common alternative to "jpeg"
     if (file_format == "jpg") {file_format <- "jpeg"}
     
-    file_name <- if (!is.null(file_name)) {
-        file_name
-    } else { 
-        deparse(substitute(gg)) # Name the file after the variable
+    if (is.null(file_name)) {
+        file_name <- deparse(substitute(gg))
     } 
     
     if (file_name == ".") {
-        file_name <- paste0("data_", sample(1:999999, 1)) # random file name
+        file_name <- paste0("image_", sample(1:999999, 1)) # random file name
     }
     
     file_path <- paste0(tempdir(), "/", file_name, ".", file_format)
