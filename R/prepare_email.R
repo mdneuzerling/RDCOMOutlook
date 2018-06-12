@@ -48,7 +48,9 @@ prepare_email <- function(
     subject = "",
     attachments = NULL,
     css = "",
-    send = FALSE
+    send = FALSE,
+    data_file_format = "csv",
+    image_file_format = "png"
 ) {
     outlook_app <- RDCOMClient::COMCreate("Outlook.Application")
     
@@ -85,7 +87,11 @@ prepare_email <- function(
 # Attach files (if any)
 # Check that this doesn't mangle the attachment file names
     purrr::walk(attachments, function(x) {
-        file_path <- to_file(x)
+        file_path <- to_file(
+            x,
+            data_file_format = data_file_format,
+            image_file_format = image_file_format
+        )
         outlook_mail[["Attachments"]]$Add(file_path)
     })
     
@@ -94,7 +100,11 @@ prepare_email <- function(
         if (is.data.frame(x)) {
             body <<- paste0(body, data_to_html(x)) # don't need the file path in this case
         } else if (ggplot2::is.ggplot(x)) {
-            file_path <- to_file(x) 
+            file_path <- to_file(
+                x,
+                data_file_format = data_file_format,
+                image_file_format = image_file_format
+            ) 
             outlook_mail[["Attachments"]]$Add(file_path)    
             body <<- paste0(
                 body, 
@@ -102,7 +112,11 @@ prepare_email <- function(
             ) 
             unlink(file_path)
         } else {
-            file_path <- to_file(x) # validates file
+            file_path <- to_file(
+                x,
+                data_file_format = data_file_format,
+                image_file_format = image_file_format
+            ) # validates file
             outlook_mail[["Attachments"]]$Add(file_path)
         } 
     })

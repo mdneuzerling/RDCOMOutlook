@@ -17,6 +17,9 @@
  
 ggplot_to_file <- function(gg, file_format = "png", file_name = NULL, ...) {
     
+    # "jpg" is a common alternative to "jpeg"
+    if (file_format == "jpg") {file_format <- "jpeg"}
+    
     file_name <- if (!is.null(file_name)) {
         file_name
     } else { 
@@ -27,7 +30,7 @@ ggplot_to_file <- function(gg, file_format = "png", file_name = NULL, ...) {
         file_name <- paste0("data_", sample(1:999999, 1)) # random file name
     }
     
-    file_path <- paste0(tempdir(), "/", file_name, ".", device)
-    ggplot2::ggsave(file_path, plot = gg, device = device = file_format, ...)
+    file_path <- paste0(tempdir(), "/", file_name, ".", file_format)
+    ggplot2::ggsave(file_path, plot = gg, device = file_format, ...)
     return(file_path)
 }  

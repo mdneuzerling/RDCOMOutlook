@@ -8,11 +8,19 @@
 #' @param 
 #' @keywords
 
-to_file <- function(obj, ...) {
+to_file <- function(obj, data_file_format = "csv", image_file_format = "png") {
     if (ggplot2::is.ggplot(obj)) {
-        file_path <- ggplot_to_file(obj, file_name = deparse(substitute(obj)), ...)
+        file_path <- ggplot_to_file(
+            obj, 
+            file_name = deparse(substitute(obj)),
+            file_format = image_file_format
+        )
     } else if (is.data.frame(obj)) {
-        file_path <- data_to_file(obj, file_name = deparse(substitute(obj)), ...)
+        file_path <- data_to_file(
+            obj, 
+            file_name = deparse(substitute(obj)),
+            file_format = data_file_format
+        )
     } else if (file.exists(obj)) {
         file_path <- obj
     } else {
