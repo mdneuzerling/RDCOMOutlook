@@ -64,17 +64,19 @@ prepare_email <- function(
     
     outlook_app <- RDCOMClient::COMCreate("Outlook.Application")
 
-# Convert embeddings and attachments to lists
+# We want the embeddings and attachments to be lists, even if they are lists of
+# just one element. List behaviour is inconsistent in R, so we're forced to use
+# this lengthy ifelse block.
     make_list <- function(x) {
         if (is.null(x)) {
             x
         } else if (is.ggplot(x)) { # ggplots are lists
             list(x)
-        } else if (is.data.frame(x)) {
+        } else if (is.data.frame(x)) { # data frames are lists
             list(x)  
-        } else if (is.list(x)) {
+        } else if (is.list(x)) { 
             x
-        } else if (is.vector(x)) {
+        } else if (is.vector(x)) { # vectors are not lists
             as.list(x)
         } else {
             list(x) # single item case
@@ -83,7 +85,8 @@ prepare_email <- function(
     embeddings <- make_list(embeddings)
     attachments <- make_list(attachments)
     
-# If only one attachment or embedding is provided, we can rename the list.
+# If only one attachment or embedding is provided, we can use the argument names
+# we stored earlier to rename the single item in the list.
 # This is only done if a named list isn't provided.
     if (is.null(names(embeddings)) & length(embeddings) == 1) {
         names(embeddings) <- embeddings_argument_name
@@ -105,13 +108,11 @@ prepare_email <- function(
     outlook_mail$GetInspector()
     signature <- outlook_mail[["HTMLBody"]]
     
-# Configure the parameters of the email using the arguments of the function.
     outlook_mail[["to"]] <- to
     outlook_mail[["cc"]] <- cc
     outlook_mail[["subject"]] <- subject
     
 # Attach files (if any)
-# Check that this doesn't mangle the attachment file names
     purrr::walk(seq_along(attachments), function(x) {
         attachment <- attachments[[x]]
         attachment_name <- names(attachments)[[x]]
@@ -129,7 +130,7 @@ prepare_email <- function(
         embedding <- embeddings[[x]]
         embedding_name <- names(embeddings)[[x]]
         if (is.data.frame(embedding)) {
-            body <<- paste0(body, data_to_html(embedding)) # don't need the file path in this case
+            body <<- paste0(body, data_to_html(embedding)) 
         } else if (ggplot2::is.ggplot(embedding)) {
             file_path <- to_file(
                 embedding,
@@ -149,8 +150,7 @@ prepare_email <- function(
         }
     })
     
-# Put the pieces of the email body together, including css and signature.
-# Don't forget the paragraph tags!
+# Don't forget the paragraph tags in the body of the email.
     outlook_mail[["HTMLBody"]] <- paste0(
         css, 
         "<p>",
