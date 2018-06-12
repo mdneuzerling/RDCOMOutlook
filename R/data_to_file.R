@@ -12,19 +12,22 @@
 #' separated) or tsv (tab-separated).
 #' Defaults to "csv" (comma-separated)
 #' @param file_name Sets the name of the saved file, without the extension. If
-#' this isn't provided, the name of the `data` variable will be used, unless 
-#' that variable name is "." (usually provided by a pipe %>%); in this case,
-#' the file name will be "data_", followed by a string of random numbers.
+#' this isn't provided, the name of the `data` variable will be used. "." is a
+#' forbidden `file_name` for this function, and is usually provided by a pipe 
+#' (%>%); in this case, the file name will be changed to "data_", followed by a 
+#' string of random numbers.
 #' @keywords
 
 data_to_file <- function(data, file_format = "csv", file_name = NULL, ...) {
     
     file_name <- if (!is.null(file_name)) {
         file_name
-    } else if (deparse(substitute(data)) != ".") { 
-        deparse(substitute(data)) # Name the file after the variable
-    } else {
-        paste0("data_", sample(1:999999, 1)) # random file name
+    } else { 
+        deparse(substitute(gg)) # Name the file after the variable
+    } 
+    
+    if (file_name == ".") {
+        file_name <- paste0("data_", sample(1:999999, 1)) # random file name
     }
     
 # Based on the cleansed `file_format`, determine how to save the data to a file
