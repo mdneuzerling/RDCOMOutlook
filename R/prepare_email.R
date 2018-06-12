@@ -84,10 +84,11 @@ prepare_email <- function(
     attachments <- make_list(attachments)
     
 # If only one attachment or embedding is provided, we can rename the list.
-    if (length(embeddings) == 1) {
+# This is only done if a named list isn't provided.
+    if (is.null(names(embeddings)) & length(embeddings) == 1) {
         names(embeddings) <- embeddings_argument_name
     }
-    if (length(attachments) == 1) {
+    if (is.null(names(attachments)) & length(attachments) == 1) {
         names(attachments) <- attachments_argument_name
     }
 
