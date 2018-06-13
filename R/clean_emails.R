@@ -36,6 +36,5 @@ clean_emails <- function(emails) {
         body = email$Body()
     )
     
-    return(augmented_results)
-
+    return(augmented_emails)
 }

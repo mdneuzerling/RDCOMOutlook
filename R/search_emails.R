@@ -18,7 +18,7 @@
 #' @param scope The scope of the search: one of "subject", "body", 
 #' "attachment_names", "from_name", "from_email", "cc_name", or "to_name".
 #' @param partial_match If set to TRUE, will allow any number of characters to
-#' appear either side of the search term.
+#' appear either side of the search term. Does not apply to `received_after`.
 #' Defaults to TRUE.
 #' @param search_subfolders If set to TRUE, will search subfolders below the
 #' specified `folder`.
@@ -46,6 +46,7 @@ search_emails <- function(
     else if (scope == "from_email") {"fromemail"} 
     else if (scope == "cc_name") {"displaycc"} 
     else if (scope == "to_name") {"displayto"} 
+    else if (scope == "received_after") {"datereceived"}
     else {
         stop(paste0(
             "Unknown scope for search: ", scope, ". ",
@@ -57,9 +58,19 @@ search_emails <- function(
     search_query <- paste0(
         "urn:schemas:httpmail:",
         scope,
-        if (partial_match) {" LIKE '%"} else {" = '"},
+        if (partial_match) {
+            " LIKE '%"
+        } else if (scope == "received_after") {
+            " > '"
+        } else {
+            " = '"
+        },
         search_term,
-        if (partial_match) {"%'"} else {"'"}
+        if (!partial_match | scope == "received_after") {
+            "'"
+        } else {
+            "'"
+        }
     )
 
     search <- outlook_app$AdvancedSearch(
@@ -73,7 +84,7 @@ search_emails <- function(
     results <- search$results()
     number_results <- results$Count()
     emails <- purrr::map(seq(number_results), function(x) results$Item(x))
-    
+
     clean_emails(emails)
 
 }
