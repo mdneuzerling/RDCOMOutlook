@@ -12,6 +12,7 @@
 #' be scaled down to the largest size that meets this contraint whilst 
 #' preserving the aspect ratio of the image. 
 #' @keywords
+#' @export
 
 embed_image_cid <- function(
     file_path,
