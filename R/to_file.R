@@ -12,11 +12,13 @@
 #' saved to a file.
 #' @param file_name Sets the name of the saved file, without the extension. If
 #' this isn't provided, the name of the `data` variable will be used. "."
-#' @keywords
+#' @param col_names Determines if column names (headers) are to be included.
+#' Defaults to TRUE.
 
 to_file <- function(
     obj, 
     data_file_format = "csv", 
+    col_names = TRUE,
     image_file_format = "png",
     file_name = NULL
 ) {
@@ -35,7 +37,8 @@ to_file <- function(
         file_path <- data_to_file(
             obj, 
             file_name = file_name,
-            file_format = data_file_format
+            file_format = data_file_format,
+            col_names = col_names
         )
     } else if (file.exists(obj)) {
         file_path <- obj

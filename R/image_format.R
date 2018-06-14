@@ -5,7 +5,6 @@
 #' If the file does not exist, an error is thrown.
 #' 
 #' @param file_path File path of a file that may or may not be an image.
-#' @keywords
 
 image_format <- function(file_path) {
 

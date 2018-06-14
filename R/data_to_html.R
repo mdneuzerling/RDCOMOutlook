@@ -6,7 +6,6 @@
 #' @param border A Boolean value which, if set to TRUE, puts a border around the
 #' HTML output. 
 #' Defaults to FALSE.
-#' @keywords
 #' @export
 
 data_to_html <- function(data, border = FALSE) {

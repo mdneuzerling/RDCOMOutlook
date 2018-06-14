@@ -6,13 +6,20 @@
 \usage{
 prepare_email(embeddings = NULL, body = "", to = "", cc = "",
   subject = "", attachments = NULL, css = "", send = FALSE,
-  data_file_format = "csv", image_file_format = "png")
+  max_image_height = 800, max_image_width = 800, data_file_format = "csv",
+  col_names = TRUE, image_file_format = "png")
 }
 \arguments{
 \item{embeddings}{An optional list of all objects to be embedded into the 
-email body or, in the case of a file path, the file will be attached instead, 
-to allow files to be piped into the function. ggplots will be converted to 
-images and data frames/tibbles will be converted to html.}
+email body, if possible. Ggplots, data frames, tibbles, and file paths 
+corresponding to known image formats (png, jpg, bmp, gif, tiff, or webp) will
+be embedded into the email body. Other files, as long as they exist, will
+be attached instead. ggplots will be converted to images and data 
+frames/tibbles will be converted to html.}
+
+\item{body}{A html body for the email. This does not need to be enclosed in
+paragraph tags.
+Defaults to an empty string.}
 
 \item{to}{A string containing the email addresses, separated by
 semicolons, which are to receive the email.
@@ -40,6 +47,31 @@ email. Note that only some CSS affects Outlook emails.}
 the email immediately. If set to FALSE, will display the email on the user's
 screen, but not send.
 Defaults to FALSE.}
+
+\item{max_image_height}{The maximum height of any embedded image. Images will
+be scaled down, if necessary. For png, jpg, or bmp files, the aspect ratio of
+the image will be preserved when scaling.}
+
+\item{max_image_width}{The maximum width of any embedded image. Images will
+be scaled down, if necessary. For png, jpg, or bmp files, the aspect ratio of
+the image will be preserved when scaling.}
+
+\item{data_file_format}{When attaching data frames/tibbles, the object will 
+be saved as a file of this format before attaching. Possible options are 
+"csv", "tsv", or "xlsx".
+Defaults to "csv".}
+
+\item{col_names}{Determines if column names (headers) are to be included when 
+saving data frames/tibbles as files to be attached.
+Defaults to TRUE.}
+
+\item{image_file_format}{When attaching ggplots, the object will be saved as 
+a file of this format before attaching. It is recommended to use either "png" 
+or "jpeg".
+Defaults to "png".}
+
+\item{When}{attaching data frames/tibbles, the object will be saved as a file
+of this format before attaching. Possible options are "csv", "tsv", or "xlsx".}
 }
 \description{
 Prepare an email in Microsoft Outlook, either sending the email immediately

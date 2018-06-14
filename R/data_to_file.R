@@ -4,8 +4,7 @@
 #' the file path. The file name will be based on the variable name of the
 #' object, and will be given an extension that corresponds to the method by
 #' which the file was saved. The `file_format` can be specified as "csv" 
-#' (comma-separated file) or "tsv"/"txt" (tab-delimited). Support for Excel 
-#' output is planned.
+#' (comma-separated file), "tsv"/"txt" (tab-delimited), or "xlsx".
 #' @param data A data frame or tibble to be converted into a file.
 #' @param file_format A file_format which will determine how the data is saved
 #' and the extension of the resulting file. Currently supports "csv" (comma-
@@ -16,13 +15,16 @@
 #' forbidden `file_name` for this function, and is usually provided by a pipe 
 #' (%>%); in this case, the file name will be changed to "data_", followed by a 
 #' string of random numbers.
-#' @keywords
+#' @param col_names Determines if column names (headers) are to be included.
+#' Defaults to TRUE.
 
-data_to_file <- function(data, file_format = "csv", file_name = NULL, ...) {
+data_to_file <- function(
+    data, 
+    file_format = "csv", 
+    file_name = NULL, 
+    col_names = TRUE
+) {
 
-# Excel files are saved as .xlsx    
-    if (file_format == "excel") {file_format <- "xlsx"}
-    
     if (is.null(file_name)) {
         file_name <- deparse(substitute(data))
     } 
@@ -34,11 +36,11 @@ data_to_file <- function(data, file_format = "csv", file_name = NULL, ...) {
 # Based on the cleansed `file_format`, determine how to save the data to a file
     file_path <- paste0(tempdir(), "/", file_name, ".", file_format)
     if (file_format == "csv") {
-        readr::write_csv(data, path = file_path, ...)
+        readr::write_csv(data, path = file_path, col_names = col_names)
     } else if (file_format == "tsv") {
-        readr::write_tsv(data, path = file_path, ...)
+        readr::write_tsv(data, path = file_path, col_names = col_names)
     } else if (file_format == "xlsx") {
-        writexl::write_xlsx(data, path = file_path, ...)
+        writexl::write_xlsx(data, path = file_path, col_names = col_names)
     } else {
         stop(paste0("Don't know how to write to ", file_format, ". ",
                     "Can only write to 'csv', 'tsv' or 'xlsx'/'excel'."))

@@ -4,7 +4,8 @@
 \alias{data_to_file}
 \title{Convert a data frame or tibble to a file}
 \usage{
-data_to_file(data, file_format = "csv", file_name = NULL, ...)
+data_to_file(data, file_format = "csv", file_name = NULL,
+  col_names = TRUE)
 }
 \arguments{
 \item{data}{A data frame or tibble to be converted into a file.}
@@ -19,12 +20,14 @@ this isn't provided, the name of the `data` variable will be used. "." is a
 forbidden `file_name` for this function, and is usually provided by a pipe 
 (%>%); in this case, the file name will be changed to "data_", followed by a 
 string of random numbers.}
+
+\item{col_names}{Determines if column names (headers) are to be included.
+Defaults to TRUE.}
 }
 \description{
 Convert a data frame or tibble to a file in a temporary location, and return
 the file path. The file name will be based on the variable name of the
 object, and will be given an extension that corresponds to the method by
 which the file was saved. The `file_format` can be specified as "csv" 
-(comma-separated file) or "tsv"/"txt" (tab-delimited). Support for Excel 
-output is planned.
+(comma-separated file), "tsv"/"txt" (tab-delimited), or "xlsx".
 }

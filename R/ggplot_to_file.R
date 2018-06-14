@@ -13,7 +13,6 @@
 #' forbidden `file_name` for this function, and is usually provided by a pipe 
 #' (%>%); in this case, the file name will be changed to "data_", followed by a 
 #' string of random numbers.
-#' @keywords
  
 ggplot_to_file <- function(gg, file_format = "png", file_name = NULL, ...) {
     

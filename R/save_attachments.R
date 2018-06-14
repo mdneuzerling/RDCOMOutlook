@@ -10,7 +10,6 @@
 #' @param email A case-sensitive search query.
 #' @param target_dir The folder in which to save the attachments. If no folder
 #' is specified, a temporary directory will be used.
-#' @keywords
 #' @export
 
 save_attachments <- function(email, target_dir = tempdir()) {

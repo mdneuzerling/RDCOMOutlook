@@ -13,10 +13,12 @@
 #' note that most CSS is disabled by Microsoft Outlook.
 #' 
 #' @param embeddings An optional list of all objects to be embedded into the 
-#' email body or, in the case of a file path, the file will be attached instead, 
-#' to allow files to be piped into the function. ggplots will be converted to 
-#' images and data frames/tibbles will be converted to html.
-#' @piaram body A html body for the email. This does not need to be enclosed in
+#' email body, if possible. Ggplots, data frames, tibbles, and file paths 
+#' corresponding to known image formats (png, jpg, bmp, gif, tiff, or webp) will
+#' be embedded into the email body. Other files, as long as they exist, will
+#' be attached instead. ggplots will be converted to images and data 
+#' frames/tibbles will be converted to html.
+#' @param body A html body for the email. This does not need to be enclosed in
 #' paragraph tags.
 #' Defaults to an empty string.
 #' @param to A string containing the email addresses, separated by
@@ -40,7 +42,25 @@
 #' the email immediately. If set to FALSE, will display the email on the user's
 #' screen, but not send.
 #' Defaults to FALSE.
-#' @keywords
+#' @param max_image_height The maximum height of any embedded image. Images will
+#' be scaled down, if necessary. For png, jpg, or bmp files, the aspect ratio of
+#' the image will be preserved when scaling.
+#' @param max_image_width The maximum width of any embedded image. Images will
+#' be scaled down, if necessary. For png, jpg, or bmp files, the aspect ratio of
+#' the image will be preserved when scaling.
+#' @param When attaching data frames/tibbles, the object will be saved as a file
+#' of this format before attaching. Possible options are "csv", "tsv", or "xlsx".
+#' @param data_file_format When attaching data frames/tibbles, the object will 
+#' be saved as a file of this format before attaching. Possible options are 
+#' "csv", "tsv", or "xlsx".
+#' Defaults to "csv".
+#' @param col_names Determines if column names (headers) are to be included when 
+#' saving data frames/tibbles as files to be attached.
+#' Defaults to TRUE.
+#' @param image_file_format When attaching ggplots, the object will be saved as 
+#' a file of this format before attaching. It is recommended to use either "png" 
+#' or "jpeg".
+#' Defaults to "png".
 #' @export
 
 prepare_email <- function(
@@ -52,7 +72,10 @@ prepare_email <- function(
     attachments = NULL,
     css = "",
     send = FALSE,
+    max_image_height = 800,
+    max_image_width = 800,
     data_file_format = "csv",
+    col_names = TRUE,
     image_file_format = "png"
 ) {
     
@@ -119,6 +142,7 @@ prepare_email <- function(
         file_path <- to_file(
             attachment,
             data_file_format = data_file_format,
+            col_names = col_names,
             image_file_format = image_file_format,
             file_name = attachment_name
         )
@@ -141,10 +165,25 @@ prepare_email <- function(
             outlook_mail[["Attachments"]]$Add(file_path)
             body <<- paste0(
                 body,
-                embed_image_cid(file_path)
+                embed_image_cid(
+                    file_path,
+                    max_height = max_image_height,
+                    max_width = max_image_width
+                )
             )
             unlink(file_path)
-        } else { # If a file can't be embedded, attach it
+        } else if (file.exists(embedding) & !is.null(image_format(embedding))) { # file is an image
+            outlook_mail[["Attachments"]]$Add(embedding)
+            body <<- paste0(
+                body,
+                embed_image_cid(
+                    embedding,
+                    max_height = max_image_height,
+                    max_width = max_image_width
+                )
+            )
+        }
+        else { # If a file can't be embedded, attach it
             file_path <- to_file(embedding) # validates file
             outlook_mail[["Attachments"]]$Add(file_path)
         }

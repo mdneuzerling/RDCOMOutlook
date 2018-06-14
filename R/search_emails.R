@@ -25,7 +25,6 @@
 #' Defaults to TRUE.
 #' @param search_time The amount of time, in seconds, to wait for the search to
 #' complete.
-#' @keywords
 #' @export
 
 search_emails <- function(

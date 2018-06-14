@@ -4,14 +4,17 @@
 \alias{to_file}
 \title{Convert an object to a file}
 \usage{
-to_file(obj, data_file_format = "csv", image_file_format = "png",
-  file_name = NULL)
+to_file(obj, data_file_format = "csv", col_names = TRUE,
+  image_file_format = "png", file_name = NULL)
 }
 \arguments{
 \item{obj}{Either a ggplot, data frame, tibble, or valid file path.}
 
 \item{data_file_format}{Preferred format for data frames/tibbles when 
 saved to a file.}
+
+\item{col_names}{Determines if column names (headers) are to be included.
+Defaults to TRUE.}
 
 \item{image_file_format}{Preferred format for ggplots and images when 
 saved to a file.}

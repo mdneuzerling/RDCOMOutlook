@@ -4,7 +4,6 @@
 #' objects), and the other columns are common attributes of emails.
 #' 
 #' @param emails A list of DCOM email objects.
-#' @keywords
 
 clean_emails <- function(emails) {
     
