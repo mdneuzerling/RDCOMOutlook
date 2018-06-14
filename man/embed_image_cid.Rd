@@ -20,5 +20,8 @@ preserving the aspect ratio of the image.}
 \description{
 Generate a HTML tag that uses a CID source to display an image. This is used
 in emails for images, in which an attached image can be embedded into the
-email body.
+email body. If the image is a png, jpg or bmp, the file will be scaled down
+to the provided `max_height` and `max_width`, preserving the aspect ratio.
+If the file is a gif, tiff or webp, the file will be scaled down without
+preserving the aspect ratio.
 }
